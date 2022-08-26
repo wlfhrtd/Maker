@@ -9,6 +9,7 @@ namespace Maker
     {
         static void Main(string[] args)
         {
+            // move greeting(); compose commands list
             Console.WriteLine("***** C# Maker *****");
             Console.WriteLine();
             Console.WriteLine("\tAvaiable commands:");

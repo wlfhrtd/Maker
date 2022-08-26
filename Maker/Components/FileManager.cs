@@ -29,15 +29,14 @@ namespace Maker.Components
             projectRootPath = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
             modelsPath = projectRootPath + Path.DirectorySeparatorChar + "Models";
             Directory.CreateDirectory(modelsPath);
+            // templates will be stored somewhere else inside Maker app itself
+            // not in another project(using package) folders
             string templatesPath = projectRootPath + Path.DirectorySeparatorChar +
                                    "Resources" + Path.DirectorySeparatorChar + "Templates";
             classTemplateFile = templatesPath + Path.DirectorySeparatorChar + "Class.txt";
             ns = Assembly.GetExecutingAssembly().GetName().Name;
         }
 
-
-        public string ClassName { get; set; }
-        // public string EntityPath => modelsPath + Path.DirectorySeparatorChar + ClassName + ".cs";
 
         public void LoadTemplate(Output output)
         {
@@ -53,10 +52,15 @@ namespace Maker.Components
 
         internal void Flush(Input input, Output output)
         {
-            using (StreamWriter sw = new(modelsPath + Path.DirectorySeparatorChar + input.ClassName + ".cs"))
+            using (StreamWriter sw = new(GetEntityFilePath(input)))
             {
                 sw.Write(output.TemplateOutput.ToString());
             }
+        }
+
+        private string GetEntityFilePath(Input input)
+        {
+            return modelsPath + Path.DirectorySeparatorChar + input.ClassName + ".cs";
         }
     }
 }

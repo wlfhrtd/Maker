@@ -14,17 +14,18 @@ namespace Maker.Components.Makers
         // askForX/Question abstraction?
         // future/existing files
         // print/list options, types etc
-        // +Repository at some point (EF)
+        // +Repository at some point (EF) !!!
 
         protected override void Interact()
         {
             // prolly should introduce kinda IPresentable with Print()/Greet() for all makers to greet/show help
+            // or just add method to AbstractMaker
             Console.WriteLine(">>> Entity Maker <<<");
             Console.WriteLine("Enter class name:");
-            
+
             string className = Console.ReadLine();
 
-            if(string.IsNullOrEmpty(className)) throw new ArgumentNullException(className);
+            if (string.IsNullOrEmpty(className)) throw new ArgumentNullException(className);
 
             Input.ClassName = className;
 
@@ -33,16 +34,23 @@ namespace Maker.Components.Makers
 
         protected override void Validate()
         {
-            // TODO
+            if (!Validator.ValidateClassName(Input.ClassName))
+            {
+                throw new ArgumentOutOfRangeException(Input.ClassName);
+            }
         }
 
         // more templates prolly e.g for fields, other access modifiers etc
+        // or just follow symfony/maker bundle as 'true way'
+        // (private fields with public get/set; for C# in would be -
+        // private backing field with public property {get;set;}  )
         private const string PUBLIC_PROPERTY_TEMPLATE = "\t\tpublic {0} {1} {{ get; set; }}";
 
         protected override void Generate()
         {
             // currently FileManager contains template path; should be here, per Maker based
-            FileManager.LoadTemplate(Output);       
+            // but not just path since Templates folder presents only for this project
+            FileManager.LoadTemplate(Output);
             Generator.GenerateNamespace(FileManager, Output);
             Generator.GenerateClassname(Input, Output);
             Generator.GenerateProperties(Input, Output, PUBLIC_PROPERTY_TEMPLATE);
@@ -58,8 +66,6 @@ namespace Maker.Components.Makers
             Console.WriteLine("Let's add some properties!");
             Console.WriteLine("Leave input empty and press Enter to stop");
 
-            // list .net types
-
             string name, type;
 
             while (true)
@@ -72,16 +78,60 @@ namespace Maker.Components.Makers
                     Console.WriteLine("STOPPED");
                     return;
                 }
-                
-                Console.WriteLine("Enter property type:");
-                type = Console.ReadLine();
 
-                if (string.IsNullOrEmpty(type)) throw new ArgumentNullException(type);
+                while (true)
+                {
+                    Console.WriteLine("Enter property type:");
+                    Console.WriteLine("Type ? to list available types.");
+                    type = Console.ReadLine();
+
+                    if (string.IsNullOrEmpty(type))
+                    {
+                        Console.WriteLine("Wrong input.");
+                        continue;
+                    }
+
+                    if (type == "?")
+                    {
+                        ListPropertyTypes();
+                        continue;
+                    }
+
+                    break;
+                }
 
                 Input.Properties.Add(name, type);
                 Console.WriteLine();
-                Console.WriteLine("Add another property");
+                Console.WriteLine("Add another property ->");
             }
+        }
+        // TODO add Class type choice handling - Assembly scan for ALL types is prolly overkill
+        // but if user enters class name as string it is possible just to put this string on %CLASSNAME% place
+        // and as bonus generate 'using' statement after TryFind(string className) from Assembly
+        private void ListPropertyTypes()
+        {
+            var currentColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("  bool\n" +
+                              "  byte\n" +
+                              "  sbyte\n" +
+                              "  char\n" +
+                              "  decimal\n" +
+                              "  double\n" +
+                              "  float\n" +
+                              "  int\n" +
+                              "  uint\n" +
+                              "  nint\n" +
+                              "  nuint\n" +
+                              "  long\n" +
+                              "  ulong\n" +
+                              "  short\n" +
+                              "  ushort\n" +
+                              "  object\n" +
+                              "  string\n" +
+                              "  dynamic\n" +
+                              "  class\n");
+            Console.ForegroundColor = currentColor;
         }
     }
 }
