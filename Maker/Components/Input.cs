@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Maker.Components
 {
-    internal class Input
+    public class Input
     {
         // TODO
 
@@ -14,5 +14,9 @@ namespace Maker.Components
         // args validation
         // options pattern?
         // static input buffer?
+
+        public string ClassName { get; set; }
+
+        public Dictionary<string, string> Properties { get; } = new(20);
     }
 }

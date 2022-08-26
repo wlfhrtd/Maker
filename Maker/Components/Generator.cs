@@ -6,8 +6,28 @@ using System.Threading.Tasks;
 
 namespace Maker.Components
 {
-    internal class Generator
+    public class Generator
     {
+        internal void GenerateProperties(Input input, Output output, string propertyTemplate)
+        {
+            foreach (var property in input.Properties)
+            {
+                output.PropertiesOutput.AppendLine(string.Format(propertyTemplate, property.Value, property.Key));
+            }
+
+            output.TemplateOutput.Replace("%BEGIN%", output.PropertiesOutput.ToString().TrimEnd());
+        }
+
+        internal void GenerateNamespace(FileManager fileManager, Output output)
+        {
+            output.TemplateOutput.Replace("%NAMESPACE%", fileManager.ns + ".Models");
+        }
+
+        internal void GenerateClassname(Input input, Output output)
+        {
+            output.TemplateOutput.Replace("%CLASSNAME%", input.ClassName);
+        }
+
         // TODO
 
         // generateClass() Generate a new file for a class from a template
@@ -21,5 +41,6 @@ namespace Maker.Components
         // getRootNamespace
         // generateController
         // generateTemplate
+
     }
 }

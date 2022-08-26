@@ -7,19 +7,17 @@ using System.Threading.Tasks;
 
 namespace Maker.Components
 {
-    internal class FileManager
+    public class FileManager
     {
         // TODO
 
         // fileSystem
-        // input?
         // parseTemplate? => Generator?
         // dumpFile
         // 'exists' methods
         // relative/absolute paths methods
         // resolving paths for current/future objects
         // paths paths paths
-
 
         public readonly string projectRootPath;
         public readonly string modelsPath;
@@ -39,6 +37,26 @@ namespace Maker.Components
 
 
         public string ClassName { get; set; }
-        public string EntityPath => modelsPath + Path.DirectorySeparatorChar + ClassName + ".cs";
+        // public string EntityPath => modelsPath + Path.DirectorySeparatorChar + ClassName + ".cs";
+
+        public void LoadTemplate(Output output)
+        {
+            using (StreamReader sr = new(classTemplateFile))
+            {
+                string line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    output.TemplateOutput.AppendLine(line);
+                }
+            }
+        }
+
+        internal void Flush(Input input, Output output)
+        {
+            using (StreamWriter sw = new(modelsPath + Path.DirectorySeparatorChar + input.ClassName + ".cs"))
+            {
+                sw.Write(output.TemplateOutput.ToString());
+            }
+        }
     }
 }

@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Maker.Factories
 {
-    internal class MakerFactory
-    {
-        // add dependencies to constructors: FileManager, Input, Generator
-        public IMaker GetMaker(string choiceInput)
+    internal static class MakerFactory
+    {     
+        public static IMaker CreateMaker(string choiceInput)
         {
             return choiceInput switch
             {

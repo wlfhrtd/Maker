@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Maker.Components
 {
-    internal class Validator
+    public class Validator
     {
         // TODO
 

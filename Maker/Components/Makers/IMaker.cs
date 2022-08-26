@@ -8,5 +8,6 @@ namespace Maker.Components.Makers
 {
     internal interface IMaker
     {
+        void Run();
     }
 }
