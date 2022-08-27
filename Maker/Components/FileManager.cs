@@ -1,4 +1,6 @@
 ﻿using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -56,6 +58,14 @@ namespace Maker.Components
             {
                 sw.Write(output.TemplateOutput.ToString());
             }
+        }
+
+        internal void SaveFile(Input input, CodeDomProvider codeDomProvider, CodeCompileUnit codeCompileUnit, CodeGeneratorOptions options)
+        {
+            string codeFileName = GetEntityFilePath(input);
+            IndentedTextWriter tw = new(new StreamWriter(codeFileName, false), "\t");
+            codeDomProvider.GenerateCodeFromCompileUnit(codeCompileUnit, tw, options);
+            tw.Close();
         }
 
         private string GetEntityFilePath(Input input)

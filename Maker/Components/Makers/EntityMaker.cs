@@ -1,5 +1,7 @@
 ﻿using Maker.Components.Makers.Base;
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,20 +47,33 @@ namespace Maker.Components.Makers
         // (private fields with public get/set; for C# in would be -
         // private backing field with public property {get;set;}  )
         private const string PUBLIC_PROPERTY_TEMPLATE = "\t\tpublic {0} {1} {{ get; set; }}";
-
+        CodeCompileUnit codeCompileUnit;
+        CodeGeneratorOptions options;
         protected override void Generate()
         {
             // currently FileManager contains template path; should be here, per Maker based
             // but not just path since Templates folder presents only for this project
-            FileManager.LoadTemplate(Output);
-            Generator.GenerateNamespace(FileManager, Output);
-            Generator.GenerateClassname(Input, Output);
-            Generator.GenerateProperties(Input, Output, PUBLIC_PROPERTY_TEMPLATE);
+            //FileManager.LoadTemplate(Output);
+            //Generator.GenerateNamespace(FileManager, Output);
+            //Generator.GenerateClassname(Input, Output);
+            //Generator.GenerateProperties(Input, Output, PUBLIC_PROPERTY_TEMPLATE);
+
+            codeCompileUnit = Generator.Generate(FileManager, Input);
+            options = new()
+            {
+                BracingStyle = "C",
+                // IndentString = "\t",
+                BlankLinesBetweenMembers = false,
+            };
         }
+
+        
 
         protected override void Save()
         {
-            FileManager.Flush(Input, Output);
+            // FileManager.Flush(Input, Output);
+            CodeDomProvider codeDomProvider = CodeDomProvider.CreateProvider("CSharp");
+            FileManager.SaveFile(Input, codeDomProvider, codeCompileUnit, options);
         }
 
         private void AskForProperties()
