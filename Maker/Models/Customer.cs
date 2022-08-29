@@ -12,10 +12,9 @@ namespace Maker.Models
     
     public class Customer
     {
-        private string Id;
-        private string name;
-        private string Age;
-        public virtual string Id
+        private int Id;
+        private string Name;
+        public virtual System.integer Id
         {
             get
             {
@@ -26,26 +25,15 @@ namespace Maker.Models
                 this.Id = value;
             }
         }
-        public virtual string name
+        public virtual string Name
         {
             get
             {
-                return this.name;
+                return this.Name;
             }
             set
             {
-                this.name = value;
-            }
-        }
-        public virtual string Age
-        {
-            get
-            {
-                return this.Age;
-            }
-            set
-            {
-                this.Age = value;
+                this.Name = value;
             }
         }
     }

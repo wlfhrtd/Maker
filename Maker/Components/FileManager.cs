@@ -21,9 +21,9 @@ namespace Maker.Components
         // resolving paths for current/future objects
         // paths paths paths
 
+        private readonly string ns;
         public readonly string projectRootPath;
-        public readonly string modelsPath;
-        public readonly string ns;
+        public readonly string modelsPath;          
         public readonly string classTemplateFile;
 
         public FileManager()
@@ -36,10 +36,15 @@ namespace Maker.Components
             string templatesPath = projectRootPath + Path.DirectorySeparatorChar +
                                    "Resources" + Path.DirectorySeparatorChar + "Templates";
             classTemplateFile = templatesPath + Path.DirectorySeparatorChar + "Class.txt";
-            ns = Assembly.GetExecutingAssembly().GetName().Name;
+
+            // Original maker bundle: forces App\Entity namespace
+            // Decision: force %PROJECT_NS%\Models namespace
+            // Reason: simplicity, uniformity
+            ns = Assembly.GetExecutingAssembly().GetName().Name + ".Models";
         }
 
 
+        public string Namespace => ns;
         public void LoadTemplate(Output output)
         {
             using (StreamReader sr = new(classTemplateFile))

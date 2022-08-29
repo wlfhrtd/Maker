@@ -13,7 +13,7 @@ namespace Maker.Components
         {
             CodeCompileUnit codeCompileUnit = new();
 
-            CodeNamespace codeNamespace = new(fileManager.ns + ".Models");
+            CodeNamespace codeNamespace = new(fileManager.Namespace);
             codeCompileUnit.Namespaces.Add(codeNamespace);
 
             CodeTypeDeclaration generatedClass = new(input.ClassName);
@@ -21,8 +21,8 @@ namespace Maker.Components
 
             foreach (var field in input.Properties)
             {
-                // just for test; TODO provide types resolving
-                CodeMemberField f = new("System." + field.Value, field.Key);
+                // TODO
+                CodeMemberField f = new(ResolveType(field.Value), field.Key); // type => name
                 generatedClass.Members.Add(f);
 
                 CodeMemberProperty p = new()
@@ -39,6 +39,25 @@ namespace Maker.Components
             return codeCompileUnit;
         }
 
+        private string? ResolveType(string typeFromUserInput)
+        {
+            return typeFromUserInput.ToLowerInvariant() switch
+            {
+                "string" => typeof(string).FullName,
+                "boolean" => typeof(bool).FullName,
+                "integer" => typeof(int).FullName,
+                "short" => typeof(short).FullName,
+                "long" => typeof(long).FullName,
+                "float" => typeof(float).FullName,
+                "double" => typeof(double).FullName,
+                "decimal" => typeof(decimal).FullName,
+                _ => throw new ArgumentOutOfRangeException(typeFromUserInput),
+                // array types
+                // datetime types
+                // other?
+            };
+        }
+
         internal void GenerateProperties(Input input, Output output, string propertyTemplate)
         {
             foreach (var property in input.Properties)
@@ -53,7 +72,7 @@ namespace Maker.Components
         {
             // output.TemplateOutput.Replace("%NAMESPACE%", fileManager.ns + ".Models");
 
-            CodeNamespace ns = new(fileManager.ns + ".Models");
+            CodeNamespace ns = new(fileManager.Namespace + ".Models");
 
         }
 
