@@ -23,6 +23,9 @@ namespace Maker.Components.Makers.Base
         private static readonly Lazy<Validator> validator = new(() => new Validator());
         protected Validator Validator => validator.Value;
 
+        private static readonly Lazy<TypesDictionary> typesDictionary = new(() => new TypesDictionary());
+        protected TypesDictionary TypesDictionary => typesDictionary.Value;
+
         public void Run()
         {
             Interact();

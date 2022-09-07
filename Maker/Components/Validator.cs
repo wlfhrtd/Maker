@@ -26,10 +26,14 @@ After the first character, it may contain numbers, letters, connectors, etc
 If the identifier is a keyword, it must be prepended with “@”
          */
 
-        public bool ValidateClassName(string className)
+        public const string INVALID_CLASS_NAME = "\n  An identifier must start with a letter or an underscore.\n" +
+                                                   "  After the first character, it may contain numbers, letters, connectors, etc.\n" +
+                                                   "  If the identifier is a keyword, it must be prepended with “@”.\n";
+
+        public bool ValidateIdentifier(string identifier)
         {
             // for classNames; should work for variables too 
-            return CodeGenerator.IsValidLanguageIndependentIdentifier(className);
+            return CodeGenerator.IsValidLanguageIndependentIdentifier(identifier);
         }
 
         // doesn't work, at least for something like "@$#*&$#*@#INVALIDCLASSNAME"

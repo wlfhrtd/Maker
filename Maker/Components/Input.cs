@@ -17,6 +17,6 @@ namespace Maker.Components
 
         public string ClassName { get; set; }
 
-        public Dictionary<string, string> Properties { get; } = new(20);
+        public Dictionary<string, string> Properties { get; } = new(10);
     }
 }

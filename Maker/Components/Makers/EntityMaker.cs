@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 
 namespace Maker.Components.Makers
 {
+
+
     public sealed class EntityMaker : AbstractMaker, IMaker
     {
         // TODO
 
         // askForX/Question abstraction?
         // future/existing files
-        // print/list options, types etc
         // +Repository at some point (EF) !!!
 
         protected override void Interact()
@@ -23,23 +24,51 @@ namespace Maker.Components.Makers
             // prolly should introduce kinda IPresentable with Print()/Greet() for all makers to greet/show help
             // or just add method to AbstractMaker
             Console.WriteLine(">>> Entity Maker <<<");
-            Console.WriteLine("Enter class name:");
-
-            string className = Console.ReadLine();
-
-            if (string.IsNullOrEmpty(className)) throw new ArgumentNullException(className);
-
-            Input.ClassName = className;
+            
+            AskForClassName();
 
             AskForProperties();
         }
 
+        private void AskForClassName()
+        {
+            string className;
+
+            while (true)
+            {
+                Console.WriteLine("Enter class name:");
+
+                className = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(className))
+                {
+                    Output.PrintEmptyInputError();
+                    
+                    continue;
+                }
+
+                if (!Validator.ValidateIdentifier(className))
+                {
+                    var currentColor = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(Validator.INVALID_CLASS_NAME);
+                    Console.ForegroundColor = currentColor;
+
+                    continue;
+                }
+
+                break;
+            }
+
+            Input.ClassName = className.UCFirst();
+        }
+
         protected override void Validate()
         {
-            if (!Validator.ValidateClassName(Input.ClassName))
-            {
-                throw new ArgumentOutOfRangeException(Input.ClassName);
-            }
+            //if (!Validator.ValidateClassName(Input.ClassName))
+            //{
+            //    throw new ArgumentOutOfRangeException(Input.ClassName);
+            //}
         }
 
         // more templates prolly e.g for fields, other access modifiers etc
@@ -58,7 +87,7 @@ namespace Maker.Components.Makers
             //Generator.GenerateClassname(Input, Output);
             //Generator.GenerateProperties(Input, Output, PUBLIC_PROPERTY_TEMPLATE);
 
-            codeCompileUnit = Generator.Generate(FileManager, Input);
+            codeCompileUnit = Generator.Generate(FileManager, Input, TypesDictionary);
             options = new()
             {
                 BracingStyle = "C",
@@ -79,7 +108,7 @@ namespace Maker.Components.Makers
         private void AskForProperties()
         {
             Console.WriteLine("Let's add some properties!");
-            Console.WriteLine("Leave input empty and press Enter to stop");
+            Console.WriteLine("Leave name input empty and press Enter to stop");
 
             string name, type;
 
@@ -102,13 +131,21 @@ namespace Maker.Components.Makers
 
                     if (string.IsNullOrEmpty(type))
                     {
-                        Console.WriteLine("Wrong input.");
+                        Output.PrintEmptyInputError();
                         continue;
                     }
 
                     if (type == "?")
                     {
                         ListPropertyTypes();
+                        continue;
+                    }
+
+                    type = type.ToLower();
+
+                    if (!TypesDictionary.Types.ContainsKey(type))
+                    {
+                        Console.WriteLine("Type is not avaiable.");
                         continue;
                     }
 
@@ -125,27 +162,16 @@ namespace Maker.Components.Makers
         // and as bonus generate 'using' statement after TryFind(string className) from Assembly
         private void ListPropertyTypes()
         {
+            StringBuilder sb = new(30 * TypesDictionary.Types.Count);
+
+            foreach (var pair in TypesDictionary.Types)
+            {
+                sb.AppendLine($"  {pair.Key} ({pair.Value})");
+            }
+
             var currentColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("  bool\n" +
-                              "  byte\n" +
-                              "  sbyte\n" +
-                              "  char\n" +
-                              "  decimal\n" +
-                              "  double\n" +
-                              "  float\n" +
-                              "  int\n" +
-                              "  uint\n" +
-                              "  nint\n" +
-                              "  nuint\n" +
-                              "  long\n" +
-                              "  ulong\n" +
-                              "  short\n" +
-                              "  ushort\n" +
-                              "  object\n" +
-                              "  string\n" +
-                              "  dynamic\n" +
-                              "  class\n");
+            Console.WriteLine(sb.ToString());
             Console.ForegroundColor = currentColor;
         }
     }

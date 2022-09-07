@@ -20,11 +20,37 @@ namespace Maker
             Console.WriteLine(" make:crud");
             Console.WriteLine();
 
-            string choice = Console.ReadLine();
+            string choice;
+            
+            Output output = new(); // TODO remove it or make static; or w/e with Errors
 
-            if (string.IsNullOrEmpty(choice)) throw new Exception("Wrong input.");
+            IMaker maker;
 
-            IMaker maker = MakerFactory.CreateMaker(choice);
+            while (true)
+            {
+                choice = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(choice))
+                {
+                    output.PrintEmptyInputError();
+
+                    continue;
+                }
+
+                try
+                {
+                    maker = MakerFactory.CreateMaker(choice);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    output.PrintCommandNotAvailableError();
+
+                    continue;
+                }
+
+                break;
+            }
+   
             maker.Run();
         }
     }
